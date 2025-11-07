@@ -1,0 +1,243 @@
+---
+title: "Práctica"
+theme: styles.scss
+warning: false
+message: false
+error: false
+---
+
+
+
+::::: columns
+::: {.column width="50%"}
+![](images/boletin_oficial.png)
+:::
+
+::: {.column width="50%"}
+El objetivo de esta práctica es obtener un reporte con la legislación que sale a nivel nacional diariamente. Para ello, vamos a armar un [`scraper del BORA`](https://www.boletinoficial.gob.ar/seccion/primera)
+:::
+:::::
+
+### Leemos el HTML
+
+🔹 1. `read_html()`– descarga el código HTML de una página web
+
+Ahora, pagina contiene el HTML de la web y podemos extraer información de ella.
+
+```{r}
+library(rvest) # para scrapear
+library(tidyverse) # para modelar
+library(gt) # para las tablitas
+
+url <- "https://www.boletinoficial.gob.ar/seccion/primera"
+pagina <- read_html(url)
+
+
+```
+
+
+Voy a observar la página y listar qué me gustaría consolidar en mi dataset
+
+
+1)  Fecha de hoy
+2)  La órbita del mismo (Ej. Ministerio de economía)
+3)  El número de normativa
+4)  El número de expediente
+5)  El enlace de la normativa
+
+### Fecha de hoy
+
+La mejor forma de **conocer** que **item** del html necesito traerme para poder armar mi base de datos es seleccionando `inspeccionar` al hacer click derecho sobre lo que quiero extraer.
+
+
+![](images/fecha_hoy.png)
+
+
+Eso va a abrir una ventana con el contenido `html` de ese elemento. En este caso `h6.text-primary-alt.text-bold` es un comando CSS. Estos selectores son usados para aplicar estilos a elementos
+
+![](images/fecha_hoy_elementos.png)
+
+#### `html_nodes()`
+
+Esta función encuentra elementos en la página web usando selectores CSS. Vamos a buscar todos los elementos con la clase *h6.text-primary-alt.text-bold*. `html_node()` solo selecciona el primer elemento
+
+❕ Vemos que la fecha se encuentra en el item \[2\]
+
+```{r}
+fechas_nodos <- pagina %>% html_nodes("h6.text-primary-alt.text-bold")
+fechas_nodos
+```
+
+#### `html_text()`
+
+Extrae el texto de un nodo HTML y lo "limpia"
+
+¡Ya tenemos nuestro primer objeto escrapeado!
+
+```{r}
+fecha_texto <- fechas_nodos[2] %>% html_text(trim = TRUE)
+fecha_texto
+```
+
+### Ministerio
+
+![](images/ministerio_elemento.png)
+
+Usamos `p.clase` cuando el elemento es una etiqueta 'p' (párrafo).
+
+```{r}
+
+orbitas <- pagina %>% html_nodes("p.item") %>% html_text()
+head(orbitas)
+
+
+```
+
+### Normativas
+
+![](images/normativa_elemento.png){fig-align="center"}
+
+
+
+
+```{r}
+
+normativas <- pagina %>% html_nodes("p.item-detalle small") %>% html_text(trim = TRUE)
+head(normativas)
+
+```
+
+Acá tenemos un problema que es que ambos items (normativa + descripción del número de expedientes) tienen el mismo formato
+
+
+```{r}
+# Me quedo con los números impares que serían los números de normativa
+numeros_normativa <- normativas[seq(1, length(normativas), by = 2)]
+head(numeros_normativa)
+# Los números pares serian los números de expediente
+nro_expediente <- normativas[seq(2, length(normativas), by = 2)]
+```
+
+#### `html_attr()`
+
+Algunas veces, la información no está en el texto, sino en los atributos de la etiqueta HTML. En este caso necesitamos traernos los links
+
+```{r}
+enlaces <- pagina %>% html_nodes("a") %>% html_attr("href") 
+head(enlaces)
+
+```
+
+### Links de normativa {.smaller}
+
+Hay más links que normativas. Por lo que necesitamos quedarnos **SOLO** con los que tienen la estructura de un link de normativa y eliminar los links de los anexos
+
+![](images/links.png)
+
+
+Nos quedamos solo con los links de de detalle aviso y eliminamos los links a los anexos
+
+```{r}
+enlaces_normativa <- enlaces[grepl("/detalleAviso", enlaces) & !grepl("anexos=", enlaces)]
+head(enlaces_normativa)
+```
+
+### Dataset final 
+
+```{r}
+
+df_normativas <- data.frame(Normativa = numeros_normativa,nro_expediente, orbitas,enlaces_normativa, stringsAsFactors = FALSE) |> 
+  mutate(fecha_publicacion = fecha_texto) 
+
+df_normativas |> 
+  head() |> 
+  gt()
+```
+
+### Hay algo raro en los links!
+
+```{r}
+df_normativas |> 
+  head() |> 
+  gt()
+```
+
+Tenemos que agregar el path completo
+
+```{r}
+df_normativas <- df_normativas |> 
+  mutate(enlaces_normativa = paste0("https://www.boletinoficial.gob.ar", enlaces_normativa))
+
+df_normativas |> 
+  head() |> 
+  gt()
+```
+
+### Traer el texto de una sola normativa
+
+Para ello nos quedamos con un solo link
+
+```{r}
+link_normativa_ejemplo <- df_normativas |> 
+  head(1) |> 
+  pull(enlaces_normativa)
+
+
+link_normativa_ejemplo
+```
+ 
+
+Un éxito! Estaban OK los links que sustrajimos de la página web del BORA
+
+```{r}
+texto_normativa <- read_html(link_normativa_ejemplo)
+
+texto_normativa %>%
+  html_nodes("#cuerpoDetalleAviso") %>%  # Selecciona el div con ese ID
+  html_text(trim = TRUE) 
+```
+
+Aplicamos los mismos pasos dentro de un bucle 
+
+``` r
+links_normativas <- df_normativas |> 
+  pull(enlaces_normativa)
+
+# Armo un dataset vacío
+base_texto_normativa <- data.frame()
+
+for (i in links_normativas) {
+  link <- i
+  
+  html_normativa <- read_html(link_normativa_ejemplo)
+  
+  texto_normativa <- html_normativa %>%
+  html_nodes("#cuerpoDetalleAviso") %>%  # Selecciona el div con ese ID
+  html_text(trim = TRUE) 
+  
+  df_temp <- data.frame(enlaces_normativa = link, texto_normativa, stringsAsFactors = FALSE) 
+  
+  base_texto_normativa <- base_texto_normativa |> 
+    bind_rows(df_temp)
+  
+}
+```
+
+```{r include = FALSE}
+base_texto_normativa <- readRDS("base_texto_normativa.rds")
+```
+
+Unimos todo y guardamos  
+
+```{r}
+df_normativas_final <- df_normativas |> 
+  left_join(base_texto_normativa) 
+
+# Guardamos
+saveRDS(df_normativas_final, "df_normativas_final.rds")
+
+# Observamos
+df_normativas_final |> 
+  head(1) 
+
+```

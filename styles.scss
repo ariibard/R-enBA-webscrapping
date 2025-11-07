@@ -1,0 +1,177 @@
+$colors: (
+  "white":    #fffdf8,
+  "black":    #1f2430,
+  "cyan":     #4dd0e1,
+  "magenta":  #ff5ea2,
+  "yellow":   #ffd166,
+  "violet":   #8b5cf6,
+  "mint":     #9dffce
+);
+
+// paleta “evento”
+$theme-cyan:        #32c0ff;
+$theme-magenta:     #ff4d94;
+$theme-yellow:      #ffd166;
+$theme-deep:        #1f2430;
+$theme-surface:     #ffffff;
+$theme-surface-alt: #f4f5fb;
+$theme-black:       #000000;
+
+/*-- scss:defaults --*/
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@300;400;500;600&family=Sanchez:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
+
+$font-family-sans-serif: "Dosis", system-ui, sans-serif;
+$font-family-serif: "Sanchez", serif;
+$font-family-title: "Abril Fatface", serif;
+
+/*-- scss:rules --*/
+
+/* ================= NAVBAR ================= */
+/* mantenemos tu organización */
+$navbar-bg: $theme-surface;        // fondo claro
+$navbar-fg: map-get($colors, "black");
+$navbar-hl: $theme-magenta;
+$link-color: $theme-cyan;
+
+.navbar,
+.navbar-dark,
+.navbar-light {
+  background: linear-gradient(90deg, #ffffff 0%, rgba(244, 245, 251, 0.75) 70%) !important;
+  border-bottom: 2px solid rgba(255, 77, 148, 0.08);
+}
+
+.navbar a,
+.navbar-brand,
+.navbar-nav .nav-link {
+  color: $navbar-fg !important;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.navbar-brand {
+  font-family: $font-family-title;
+  font-size: 1.4rem;
+}
+
+.navbar-nav .nav-link:hover {
+  color: $navbar-hl !important;
+}
+
+/* ================= BODY ================= */
+body {
+  background: radial-gradient(circle at top, #ffffff 0%, #f4f5fb 55%, #fdf9ff 100%);
+  color: map-get($colors, "black");
+  font-family: $font-family-sans-serif;
+  line-height: 1.6;
+}
+
+/* ================= LINKS ================= */
+a {
+  color: $theme-cyan;
+  text-decoration: none;
+  font-weight: 500;
+  &:hover {
+    color: $theme-magenta;
+    text-decoration: underline;
+  }
+}
+
+/* utilitarias con tu map */
+@each $name, $color in $colors {
+  .text-#{$name} { color: $color !important; }
+  .bg-#{$name}   { background-color: $color !important; }
+}
+
+/* ================= TITULOS ================= */
+.title-text {
+  font-family: $font-family-title;
+  font-size: 2.4rem;
+  margin-bottom: 0.5em;
+  color: $theme-deep;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-family-serif;
+  color: $theme-deep;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 0.6rem;
+}
+h2::after {
+  content: "";
+  display: block;
+  width: 68px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, $theme-cyan 0%, $theme-magenta 50%, $theme-yellow 100%);
+  margin-top: 0.45rem;
+}
+
+/* ================= CARDS ================= */
+.card-like {
+  background-color: $theme-surface;
+  padding: 1.1rem 1.25rem;
+  border-radius: 14px;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.04);
+  border: 1px solid rgba(50, 192, 255, 0.08);
+  margin-bottom: 1.5rem;
+}
+
+.card-outline {
+  border: 2px solid rgba(50, 192, 255, 0.08);
+  border-radius: 14px;
+  padding: 1rem 1.15rem;
+  background-color: #ffffff;
+  margin-bottom: 1.5rem;
+}
+
+/* ================= IMAGENES ================= */
+.rounded-img {
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.04);
+}
+
+/* ================= BADGE / INFO ================= */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  background: rgba(255, 94, 162, 0.12);
+  border: 1px solid rgba(255, 94, 162, 0.24);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: $theme-deep;
+}
+.badge-pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(90deg, $theme-cyan 0%, $theme-magenta 100%);
+  border-radius: 999px;
+}
+
+/* ================= CALLOUT CLARO ================= */
+.callout {
+  background: linear-gradient(90deg, rgba(50, 192, 255, 0.12) 0%, rgba(255, 77, 148, 0.12) 100%);
+  border: 1px solid rgba(255, 77, 148, 0.2);
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.2rem;
+}
+.callout-title {
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: $theme-deep;
+}
+
+
+
+
