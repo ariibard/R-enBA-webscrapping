@@ -4,6 +4,7 @@ project:
 
 website:
   title: "R en acción Webscrapping con `{rvest}`"
+  favicon: logo.png
   
   page-footer:
     left: "&copy; 2025 Ariana Bardauil"
