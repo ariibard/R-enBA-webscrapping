@@ -1,0 +1,2389 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Práctica – R en acción Webscrapping con {rvest}</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c118229e15b17a8a0e67ff481f63b4c0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./practica.html">Práctica</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header">
+      <a href="./index.html" class="sidebar-logo-link">
+      <img src="./logo.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">¿Qué necesitamos?</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Diapositivas</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./practica.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Práctica</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Práctica</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="scrapper-del-boletín-oficial" class="level1">
+<h1>Scrapper del Boletín oficial</h1>
+<p>El objetivo de esta práctica es obtener un reporte con la legislación que sale a nivel nacional diariamente. Para ello, vamos a armar un <a href="https://www.boletinoficial.gob.ar/seccion/primera"><code>scraper del BORA</code></a></p>
+<p><img src="images/boletin_oficial.png" class="img-fluid"></p>
+<section id="leemos-el-html" class="level3">
+<h3 class="anchored" data-anchor-id="leemos-el-html">Leemos el HTML</h3>
+<p>🔹 1. <code>read_html()</code>– descarga el código HTML de una página web</p>
+<p>Ahora, pagina contiene el HTML de la web y podemos extraer información de ella.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rvest) <span class="co"># para scrapear</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># para modelar</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt) <span class="co"># para las tablitas</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://www.boletinoficial.gob.ar/seccion/primera"</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>pagina <span class="ot">&lt;-</span> <span class="fu">read_html</span>(url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Voy a observar la página y listar qué me gustaría consolidar en mi dataset</p>
+<ol type="1">
+<li>Fecha de hoy</li>
+<li>La órbita del mismo (Ej. Ministerio de economía)</li>
+<li>El número de normativa</li>
+<li>El número de expediente</li>
+<li>El enlace de la normativa</li>
+</ol>
+</section>
+<section id="fecha-de-hoy" class="level3">
+<h3 class="anchored" data-anchor-id="fecha-de-hoy">Fecha de hoy</h3>
+<p>La mejor forma de <strong>conocer</strong> que <strong>item</strong> del html necesito traerme para poder armar mi base de datos es seleccionando <code>inspeccionar</code> al hacer click derecho sobre lo que quiero extraer.</p>
+<p><img src="images/fecha_hoy.png" class="img-fluid"></p>
+<p>Eso va a abrir una ventana con el contenido <code>html</code> de ese elemento. En este caso <code>h6.text-primary-alt.text-bold</code> es un comando CSS. Estos selectores son usados para aplicar estilos a elementos</p>
+<p><img src="images/fecha_hoy_elementos.png" class="img-fluid"></p>
+<section id="html_nodes" class="level4">
+<h4 class="anchored" data-anchor-id="html_nodes"><code>html_nodes()</code></h4>
+<p>Esta función encuentra elementos en la página web usando selectores CSS. Vamos a buscar todos los elementos con la clase <em>h6.text-primary-alt.text-bold</em>. <code>html_node()</code> solo selecciona el primer elemento</p>
+<p>❕ Vemos que la fecha se encuentra en el item [2]</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fechas_nodos <span class="ot">&lt;-</span> pagina <span class="sc">%&gt;%</span> <span class="fu">html_nodes</span>(<span class="st">"h6.text-primary-alt.text-bold"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>fechas_nodos</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{xml_nodeset (2)}
+[1] &lt;h6 class="text-primary-alt text-bold"&gt;Edición del&lt;/h6&gt;
+[2] &lt;h6 class="text-primary-alt text-bold"&gt;\n\t\t\t\t\t\t\t\t&lt;b&gt;7 de Noviembr ...</code></pre>
+</div>
+</div>
+</section>
+<section id="html_text" class="level4">
+<h4 class="anchored" data-anchor-id="html_text"><code>html_text()</code></h4>
+<p>Extrae el texto de un nodo HTML y lo “limpia”</p>
+<p>¡Ya tenemos nuestro primer objeto escrapeado!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fecha_texto <span class="ot">&lt;-</span> fechas_nodos[<span class="dv">2</span>] <span class="sc">%&gt;%</span> <span class="fu">html_text</span>(<span class="at">trim =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fecha_texto</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "7 de Noviembre de 2025"</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="ministerio" class="level3">
+<h3 class="anchored" data-anchor-id="ministerio">Ministerio</h3>
+<p><img src="images/ministerio_elemento.png" class="img-fluid"></p>
+<p>Usamos <code>p.clase</code> cuando el elemento es una etiqueta ‘p’ (párrafo).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>orbitas <span class="ot">&lt;-</span> pagina <span class="sc">%&gt;%</span> <span class="fu">html_nodes</span>(<span class="st">"p.item"</span>) <span class="sc">%&gt;%</span> <span class="fu">html_text</span>()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(orbitas)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "DIRECCIÓN NACIONAL DE VIALIDAD "                                                       
+[2] "ENTE NACIONAL REGULADOR DEL GAS "                                                      
+[3] "ENTE NACIONAL REGULADOR DEL GAS "                                                      
+[4] "INSTITUTO NACIONAL DE SEMILLAS "                                                       
+[5] "INSTITUTO NACIONAL DE VITIVINICULTURA "                                                
+[6] "JEFATURA DE GABINETE DE MINISTROS - SECRETARÍA DE COORDINACIÓN LEGAL Y ADMINISTRATIVA "</code></pre>
+</div>
+</div>
+</section>
+<section id="normativas" class="level3">
+<h3 class="anchored" data-anchor-id="normativas">Normativas</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/normativa_elemento.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>normativas <span class="ot">&lt;-</span> pagina <span class="sc">%&gt;%</span> <span class="fu">html_nodes</span>(<span class="st">"p.item-detalle small"</span>) <span class="sc">%&gt;%</span> <span class="fu">html_text</span>(<span class="at">trim =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(normativas)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Resolución 1799/2025"                 
+[2] "RESOL-2025-1799-APN-DNV#MEC"          
+[3] "Resolución 851/2025"                  
+[4] "RESOL-2025-851-APN-DIRECTORIO#ENARGAS"
+[5] "Resolución 852/2025"                  
+[6] "RESOL-2025-852-APN-DIRECTORIO#ENARGAS"</code></pre>
+</div>
+</div>
+<p>Acá tenemos un problema que es que ambos items (normativa + descripción del número de expedientes) tienen el mismo formato</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Me quedo con los números impares que serían los números de normativa</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>numeros_normativa <span class="ot">&lt;-</span> normativas[<span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">length</span>(normativas), <span class="at">by =</span> <span class="dv">2</span>)]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(numeros_normativa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Resolución 1799/2025" "Resolución 851/2025"  "Resolución 852/2025" 
+[4] "Resolución 512/2025"  "Resolución 37/2025"   "Resolución 220/2025" </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Los números pares serian los números de expediente</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>nro_expediente <span class="ot">&lt;-</span> normativas[<span class="fu">seq</span>(<span class="dv">2</span>, <span class="fu">length</span>(normativas), <span class="at">by =</span> <span class="dv">2</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="html_attr" class="level4">
+<h4 class="anchored" data-anchor-id="html_attr"><code>html_attr()</code></h4>
+<p>Algunas veces, la información no está en el texto, sino en los atributos de la etiqueta HTML. En este caso necesitamos traernos los links</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>enlaces <span class="ot">&lt;-</span> pagina <span class="sc">%&gt;%</span> <span class="fu">html_nodes</span>(<span class="st">"a"</span>) <span class="sc">%&gt;%</span> <span class="fu">html_attr</span>(<span class="st">"href"</span>) </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(enlaces)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "/"                              "/"                             
+[3] "/estatica/institucional-mision" "/estatica/prodyserv"           
+[5] "/estatica/faq-preguntas"        "/contacto"                     </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="links-de-normativa" class="level3 smaller">
+<h3 class="smaller anchored" data-anchor-id="links-de-normativa">Links de normativa</h3>
+<p>Hay más links que normativas. Por lo que necesitamos quedarnos <strong>SOLO</strong> con los que tienen la estructura de un link de normativa y eliminar los links de los anexos</p>
+<p><img src="images/links.png" class="img-fluid"></p>
+<p>Nos quedamos solo con los links de de detalle aviso y eliminamos los links a los anexos</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>enlaces_normativa <span class="ot">&lt;-</span> enlaces[<span class="fu">grepl</span>(<span class="st">"/detalleAviso"</span>, enlaces) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"anexos="</span>, enlaces)]</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(enlaces_normativa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "/detalleAviso/primera/334159/20251107"
+[2] "/detalleAviso/primera/334160/20251107"
+[3] "/detalleAviso/primera/334161/20251107"
+[4] "/detalleAviso/primera/334162/20251107"
+[5] "/detalleAviso/primera/334163/20251107"
+[6] "/detalleAviso/primera/334164/20251107"</code></pre>
+</div>
+</div>
+</section>
+<section id="dataset-final" class="level3">
+<h3 class="anchored" data-anchor-id="dataset-final">Dataset final</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df_normativas <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Normativa =</span> numeros_normativa,nro_expediente, orbitas,enlaces_normativa, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fecha_publicacion =</span> fecha_texto) </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>df_normativas <span class="sc">|&gt;</span> </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="xrfupathgs" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#xrfupathgs table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#xrfupathgs thead, #xrfupathgs tbody, #xrfupathgs tfoot, #xrfupathgs tr, #xrfupathgs td, #xrfupathgs th {
+  border-style: none;
+}
+
+#xrfupathgs p {
+  margin: 0;
+  padding: 0;
+}
+
+#xrfupathgs .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#xrfupathgs .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#xrfupathgs .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#xrfupathgs .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#xrfupathgs .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#xrfupathgs .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xrfupathgs .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#xrfupathgs .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#xrfupathgs .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#xrfupathgs .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#xrfupathgs .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#xrfupathgs .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#xrfupathgs .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#xrfupathgs .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#xrfupathgs .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#xrfupathgs .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#xrfupathgs .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#xrfupathgs .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#xrfupathgs .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xrfupathgs .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#xrfupathgs .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#xrfupathgs .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#xrfupathgs .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xrfupathgs .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#xrfupathgs .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#xrfupathgs .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xrfupathgs .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xrfupathgs .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#xrfupathgs .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xrfupathgs .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#xrfupathgs .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xrfupathgs .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#xrfupathgs .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xrfupathgs .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#xrfupathgs .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xrfupathgs .gt_left {
+  text-align: left;
+}
+
+#xrfupathgs .gt_center {
+  text-align: center;
+}
+
+#xrfupathgs .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#xrfupathgs .gt_font_normal {
+  font-weight: normal;
+}
+
+#xrfupathgs .gt_font_bold {
+  font-weight: bold;
+}
+
+#xrfupathgs .gt_font_italic {
+  font-style: italic;
+}
+
+#xrfupathgs .gt_super {
+  font-size: 65%;
+}
+
+#xrfupathgs .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#xrfupathgs .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#xrfupathgs .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#xrfupathgs .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#xrfupathgs .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#xrfupathgs .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#xrfupathgs .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#xrfupathgs .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#xrfupathgs div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="Normativa" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Normativa</th>
+<th id="nro_expediente" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">nro_expediente</th>
+<th id="orbitas" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">orbitas</th>
+<th id="enlaces_normativa" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">enlaces_normativa</th>
+<th id="fecha_publicacion" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">fecha_publicacion</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Normativa">Resolución 1799/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-1799-APN-DNV#MEC</td>
+<td class="gt_row gt_left" headers="orbitas">DIRECCIÓN NACIONAL DE VIALIDAD</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334159/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Normativa">Resolución 851/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-851-APN-DIRECTORIO#ENARGAS</td>
+<td class="gt_row gt_left" headers="orbitas">ENTE NACIONAL REGULADOR DEL GAS</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334160/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Normativa">Resolución 852/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-852-APN-DIRECTORIO#ENARGAS</td>
+<td class="gt_row gt_left" headers="orbitas">ENTE NACIONAL REGULADOR DEL GAS</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334161/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Normativa">Resolución 512/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-512-APN-INASE#MEC</td>
+<td class="gt_row gt_left" headers="orbitas">INSTITUTO NACIONAL DE SEMILLAS</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334162/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Normativa">Resolución 37/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-37-APN-INV#MEC</td>
+<td class="gt_row gt_left" headers="orbitas">INSTITUTO NACIONAL DE VITIVINICULTURA</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334163/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Normativa">Resolución 220/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-220-APN-SCLYA#JGM</td>
+<td class="gt_row gt_left" headers="orbitas">JEFATURA DE GABINETE DE MINISTROS - SECRETARÍA DE COORDINACIÓN LEGAL Y ADMINISTRATIVA</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334164/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="hay-algo-raro-en-los-links" class="level3">
+<h3 class="anchored" data-anchor-id="hay-algo-raro-en-los-links">Hay algo raro en los links!</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_normativas <span class="sc">|&gt;</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="ppamdwlzet" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ppamdwlzet table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#ppamdwlzet thead, #ppamdwlzet tbody, #ppamdwlzet tfoot, #ppamdwlzet tr, #ppamdwlzet td, #ppamdwlzet th {
+  border-style: none;
+}
+
+#ppamdwlzet p {
+  margin: 0;
+  padding: 0;
+}
+
+#ppamdwlzet .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ppamdwlzet .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#ppamdwlzet .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ppamdwlzet .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ppamdwlzet .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ppamdwlzet .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ppamdwlzet .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ppamdwlzet .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ppamdwlzet .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ppamdwlzet .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ppamdwlzet .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ppamdwlzet .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ppamdwlzet .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ppamdwlzet .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#ppamdwlzet .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ppamdwlzet .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ppamdwlzet .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ppamdwlzet .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ppamdwlzet .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ppamdwlzet .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ppamdwlzet .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ppamdwlzet .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ppamdwlzet .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ppamdwlzet .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ppamdwlzet .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ppamdwlzet .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ppamdwlzet .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ppamdwlzet .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ppamdwlzet .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ppamdwlzet .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ppamdwlzet .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ppamdwlzet .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ppamdwlzet .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ppamdwlzet .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ppamdwlzet .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ppamdwlzet .gt_left {
+  text-align: left;
+}
+
+#ppamdwlzet .gt_center {
+  text-align: center;
+}
+
+#ppamdwlzet .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ppamdwlzet .gt_font_normal {
+  font-weight: normal;
+}
+
+#ppamdwlzet .gt_font_bold {
+  font-weight: bold;
+}
+
+#ppamdwlzet .gt_font_italic {
+  font-style: italic;
+}
+
+#ppamdwlzet .gt_super {
+  font-size: 65%;
+}
+
+#ppamdwlzet .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#ppamdwlzet .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ppamdwlzet .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ppamdwlzet .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ppamdwlzet .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ppamdwlzet .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ppamdwlzet .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#ppamdwlzet .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#ppamdwlzet div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="Normativa" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Normativa</th>
+<th id="nro_expediente" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">nro_expediente</th>
+<th id="orbitas" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">orbitas</th>
+<th id="enlaces_normativa" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">enlaces_normativa</th>
+<th id="fecha_publicacion" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">fecha_publicacion</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Normativa">Resolución 1799/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-1799-APN-DNV#MEC</td>
+<td class="gt_row gt_left" headers="orbitas">DIRECCIÓN NACIONAL DE VIALIDAD</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334159/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Normativa">Resolución 851/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-851-APN-DIRECTORIO#ENARGAS</td>
+<td class="gt_row gt_left" headers="orbitas">ENTE NACIONAL REGULADOR DEL GAS</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334160/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Normativa">Resolución 852/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-852-APN-DIRECTORIO#ENARGAS</td>
+<td class="gt_row gt_left" headers="orbitas">ENTE NACIONAL REGULADOR DEL GAS</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334161/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Normativa">Resolución 512/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-512-APN-INASE#MEC</td>
+<td class="gt_row gt_left" headers="orbitas">INSTITUTO NACIONAL DE SEMILLAS</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334162/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Normativa">Resolución 37/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-37-APN-INV#MEC</td>
+<td class="gt_row gt_left" headers="orbitas">INSTITUTO NACIONAL DE VITIVINICULTURA</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334163/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Normativa">Resolución 220/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-220-APN-SCLYA#JGM</td>
+<td class="gt_row gt_left" headers="orbitas">JEFATURA DE GABINETE DE MINISTROS - SECRETARÍA DE COORDINACIÓN LEGAL Y ADMINISTRATIVA</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">/detalleAviso/primera/334164/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Tenemos que agregar el path completo</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df_normativas <span class="ot">&lt;-</span> df_normativas <span class="sc">|&gt;</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">enlaces_normativa =</span> <span class="fu">paste0</span>(<span class="st">"https://www.boletinoficial.gob.ar"</span>, enlaces_normativa))</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>df_normativas <span class="sc">|&gt;</span> </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="geotbavbvl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#geotbavbvl table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#geotbavbvl thead, #geotbavbvl tbody, #geotbavbvl tfoot, #geotbavbvl tr, #geotbavbvl td, #geotbavbvl th {
+  border-style: none;
+}
+
+#geotbavbvl p {
+  margin: 0;
+  padding: 0;
+}
+
+#geotbavbvl .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#geotbavbvl .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#geotbavbvl .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#geotbavbvl .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#geotbavbvl .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#geotbavbvl .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#geotbavbvl .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#geotbavbvl .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#geotbavbvl .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#geotbavbvl .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#geotbavbvl .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#geotbavbvl .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#geotbavbvl .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#geotbavbvl .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#geotbavbvl .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#geotbavbvl .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#geotbavbvl .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#geotbavbvl .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#geotbavbvl .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#geotbavbvl .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#geotbavbvl .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#geotbavbvl .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#geotbavbvl .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#geotbavbvl .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#geotbavbvl .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#geotbavbvl .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#geotbavbvl .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#geotbavbvl .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#geotbavbvl .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#geotbavbvl .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#geotbavbvl .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#geotbavbvl .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#geotbavbvl .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#geotbavbvl .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#geotbavbvl .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#geotbavbvl .gt_left {
+  text-align: left;
+}
+
+#geotbavbvl .gt_center {
+  text-align: center;
+}
+
+#geotbavbvl .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#geotbavbvl .gt_font_normal {
+  font-weight: normal;
+}
+
+#geotbavbvl .gt_font_bold {
+  font-weight: bold;
+}
+
+#geotbavbvl .gt_font_italic {
+  font-style: italic;
+}
+
+#geotbavbvl .gt_super {
+  font-size: 65%;
+}
+
+#geotbavbvl .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#geotbavbvl .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#geotbavbvl .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#geotbavbvl .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#geotbavbvl .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#geotbavbvl .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#geotbavbvl .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#geotbavbvl .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#geotbavbvl div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="Normativa" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Normativa</th>
+<th id="nro_expediente" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">nro_expediente</th>
+<th id="orbitas" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">orbitas</th>
+<th id="enlaces_normativa" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">enlaces_normativa</th>
+<th id="fecha_publicacion" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">fecha_publicacion</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Normativa">Resolución 1799/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-1799-APN-DNV#MEC</td>
+<td class="gt_row gt_left" headers="orbitas">DIRECCIÓN NACIONAL DE VIALIDAD</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">https://www.boletinoficial.gob.ar/detalleAviso/primera/334159/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Normativa">Resolución 851/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-851-APN-DIRECTORIO#ENARGAS</td>
+<td class="gt_row gt_left" headers="orbitas">ENTE NACIONAL REGULADOR DEL GAS</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">https://www.boletinoficial.gob.ar/detalleAviso/primera/334160/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Normativa">Resolución 852/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-852-APN-DIRECTORIO#ENARGAS</td>
+<td class="gt_row gt_left" headers="orbitas">ENTE NACIONAL REGULADOR DEL GAS</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">https://www.boletinoficial.gob.ar/detalleAviso/primera/334161/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Normativa">Resolución 512/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-512-APN-INASE#MEC</td>
+<td class="gt_row gt_left" headers="orbitas">INSTITUTO NACIONAL DE SEMILLAS</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">https://www.boletinoficial.gob.ar/detalleAviso/primera/334162/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Normativa">Resolución 37/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-37-APN-INV#MEC</td>
+<td class="gt_row gt_left" headers="orbitas">INSTITUTO NACIONAL DE VITIVINICULTURA</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">https://www.boletinoficial.gob.ar/detalleAviso/primera/334163/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Normativa">Resolución 220/2025</td>
+<td class="gt_row gt_left" headers="nro_expediente">RESOL-2025-220-APN-SCLYA#JGM</td>
+<td class="gt_row gt_left" headers="orbitas">JEFATURA DE GABINETE DE MINISTROS - SECRETARÍA DE COORDINACIÓN LEGAL Y ADMINISTRATIVA</td>
+<td class="gt_row gt_left" headers="enlaces_normativa">https://www.boletinoficial.gob.ar/detalleAviso/primera/334164/20251107</td>
+<td class="gt_row gt_left" headers="fecha_publicacion">7 de Noviembre de 2025</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="traer-el-texto-de-una-sola-normativa" class="level3">
+<h3 class="anchored" data-anchor-id="traer-el-texto-de-una-sola-normativa">Traer el texto de una sola normativa</h3>
+<p>Para ello nos quedamos con un solo link</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>link_normativa_ejemplo <span class="ot">&lt;-</span> df_normativas <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(enlaces_normativa)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>link_normativa_ejemplo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "https://www.boletinoficial.gob.ar/detalleAviso/primera/334159/20251107"</code></pre>
+</div>
+</div>
+<p>Un éxito! Estaban OK los links que sustrajimos de la página web del BORA</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>texto_normativa <span class="ot">&lt;-</span> <span class="fu">read_html</span>(link_normativa_ejemplo)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>texto_normativa <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_nodes</span>(<span class="st">"#cuerpoDetalleAviso"</span>) <span class="sc">%&gt;%</span>  <span class="co"># Selecciona el div con ese ID</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text</span>(<span class="at">trim =</span> <span class="cn">TRUE</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "table tr td {border: 1px solid grey; border-spacing: 0px; border-collapse: collapse; padding: 5px; font-size: 12px; text-align: center;}Ciudad de Buenos Aires, 05/11/2025VISTO el Expediente N.° EX-2024-132943965- -APN-DNV#MEC, del Registro de esta Dirección Nacional de Vialidad, organismo descentralizado bajo la órbita del Ministerio de Economía, conforme Decreto N.° 644/2024,&nbsp;yCONSIDERANDO:Que, por medio del Acta de Constatación N.° 125/2024, personal autorizado de esta Dirección Nacional de Vialidad constató durante la Evaluación de Estado 2024, la existencia de un Índice de Estado (IE) característico menor al valor contractualmente exigido en la Ruta Nacional N.° 135, Tramo Km. 0 a Km. 13, valor alcanzado IE = 6,31.Que, a través de la mencionada Acta de Constatación, se le imputó a Caminos del Río Uruguay S.A., Concesionaria del Corredor Vial N.° 18, la comisión de una infracción a lo dispuesto en el Artículo 3 “Condiciones exigibles para la calzada de rodamiento”, Capítulo I “Especificaciones Técnicas Generales para el mantenimiento, reparación y conservación rutinaria”, del Anexo II del Acta Acuerdo de Reformulación del Contrato de Concesión de Obra Pública para las mejoras, ampliación, remodelación, conservación y administración del Corredor N.° 18, aprobada por el Decreto N.° 1.019/1996 y modificado luego por el Artículo 7° de la Primera Adecuación de la mencionada Acta Acuerdo aprobada por la Resolución N.° 342/2001 del Registro de la entonces Secretaría de Obras Públicas.Que, por edicto publicado en el Boletín Oficial con fecha 21 de marzo de 2023, el Juzgado Nacional en lo Comercial N.° 9, Secretaría N.° 17 comunicó que en los autos caratulados “Caminos del Río Uruguay S.A. de Construcciones y Concesiones Viales” (Expediente Judicial N.° 1520/2023) se declaró la apertura del concurso preventivo de la Empresa Concesionaria del Corredor Vial N.° 18, Caminos del Río Uruguay S.A. de Construcciones y Concesiones Viales.Que, con fecha 20 de febrero de 2024, la Sala A de la Cámara Comercial, en el marco de la mencionada causa, resolvió: “Admitir parcialmente el recurso deducido por la Dirección Nacional de Vialidad y, por lo tanto, disponer que la medida cautelar dictada el 19.10.23 cesará a los 30 días de notificada la presente, plazo en el que las partes involucradas deberán realizar todos aquellos trámites que fueran necesarios a los fines de finiquitar el contrato de concesión como fuera estipulado. Ello, sin perjuicio de lo que pudiera decidirse, por acuerdo de partes en su caso y de así considerarlo procedente los organismos competentes, respecto de la prórroga de concesión”, operando, en consecuencia, la finalización de la Concesión el día 9 de abril de 2024.Que, la Cláusula Cuarta “Plazo de la Concesión” Inc. 4.2 Establece que “Cumplido el Plazo de la concesión, la AUTORIDAD DE APLICACIÓN podrá disponer su prórroga por doce (12) meses cuando no existan operadores en condiciones de asumir la prestación de los servicios. En tal caso. LA CONCESIONARIA estará obligada a continuar por dicho lapso la concesión en los términos presente contrato. La voluntad de la AUTORIDAD DE APLICACIÓN de prorrogar la concesión deberá ser comunicada de manera fehaciente a LA CONCESIONARIA con una anticipación no menor a noventa (90) días del vencimiento del contractual.”Que, ante la proximidad del vencimiento de plazo establecido por la Resolución judicial de fecha 20 de febrero del 2024, no existiendo operadores en condiciones de asumir la prestación de los servicios, y a los fines de garantizar la operatividad y servicios al usuario, esta Dirección Nacional de Vialidad en condición de Autoridad de Aplicación, consideró necesario hacer uso de la facultad establecida en la Cláusula Cuarta “Plazo de la Concesión” Inc. 4.2, del Acta Acuerdo de Reformulación del Contrato de Concesión aprobada mediante Decreto N.° 1.019/1996.Que, en consecuencia a través de la RESOL-2024-144-APN-DNV#MINF de fecha 8 de abril de 2024, se estableció la prórroga de la Concesión Corredor Vial Nacional N.° 18 otorgada a la empresa Caminos del Río Uruguay S.A. de Construcciones y Concesiones Viales por el Decreto N.º 2039/1990, por el plazo de 12 (doce) meses contados a partir de la fecha de culminación de la Concesión, en virtud de lo dispuesto por la Cláusula Cuarta “Plazo de la Concesión” Inc. 4.2, del Acta Acuerdo de Reformulación del Contrato de Concesión de Obra Pública para las Mejoras, Ampliación, Remodelación, Conservación y Administración del Corredor N.º 18, Perteneciente al Grupo V De La Red Vial Nacional aprobado por Decreto N.º 1.019/1996.Que, por medio de la citada RESOL-2024-144-APN-DNV#MINF, se establece que los derechos, obligaciones y previsiones del Acta Acuerdo de Reformulación del Contrato de Concesión de Obra Pública para las Mejoras, Ampliación, Remodelación, Conservación y Administración del Corredor N.º 18, Perteneciente al Grupo V De La Red Vial Nacional aprobado por Decreto N.º 1.019/1996 y sus normas complementarias y modificatorias, mantiene su vigencia durante la prórroga establecida por el artículo 1°.Que, el Acta de Constatación N.º 118/24, cumple con todas las formalidades establecidas en el Artículo 5 “Régimen de sanciones e infracciones”, Inciso 5.2 “Actas. Formalidades”, del Capítulo II, Anexo II del Acta Acuerdo mencionada, y su notificación fue correctamente practicada, conforme surge del cuerpo de la misma, de acuerdo a lo prescripto por el Artículo 41 Inciso a), y por el Artículo 43 del Reglamento de Procedimientos Administrativos. Decreto N°&nbsp;1759/72 T.O. 2024.Que, en función de ello, el Acta de Constatación en cuestión tiene presunción de verdad, conforme lo dispone el citado Artículo 5.2 “Actas – Formalidades”, y la fuerza y valor probatorio de toda actuación administrativa, en tanto no sea desvirtuada por prueba en contrario. (conf. C.Fed en lo Cont. Adm. Sala II, in re “Dar S.A.”; sentencia del 13-7-95; Sala III, in re: “Distribuidora de Gas del Sur”, del 21-9-93; Sala IV, in re: ‘’Romera, Marcos’’, sentencia del 21-9-93; Sala V in re: “Y.P.F. c/ Cía de Obras y Servicios Públicos s/ Contrato de Obra Pública”, sentencia del 28-4-97; C.S.J.N: Fallos 259:398; 281:173).Que, de acuerdo con el Artículo 22 del “Reglamento de Actuación del Órgano de Control de Concesiones Viales en materia Sancionatoria para los supuestos de los Corredores Viales Nacionales”, aprobado por Resolución N.º 134/2001 del Registro del entonces Órgano de Control de Concesiones Viales, ha tomado la intervención de su competencia la Gerencia Ejecutiva de Planeamiento y Concesiones de esta Dirección Nacional de Vialidad.Que, con respecto a la reparación de los incumplimientos verificados, la Supervisión del Corredor, informa que las deficiencias mencionadas en el Acta de Constatación N.° 125/2024 se encontraban sin subsanar el día 9 de abril de 2025, fecha del fin de la Concesión.Que, consultada nuevamente la Supervisión, informa que se debe imputar un cargo adicional a la multa a ser eventualmente aplicada.Que, siguiendo con el trámite pertinente y de acuerdo con el citado Artículo 22, tomó intervención el área económico financiera de la Gerencia Ejecutiva de Planeamiento y Concesiones de esta Dirección Nacional de Vialidad.Que, conforme lo dispuesto por el Inciso 5.4 del Capítulo II del Anexo II del Acta Acuerdo mencionada, y de conformidad con lo dispuesto en el Título III del “Reglamento de Actuación del Órgano de Control de Concesiones Viales en materia Sancionatoria para los supuestos de los Corredores Viales Nacionales”, aprobado por Resolución N.º 134/2001 del Registro del entonces Órgano de Control de Concesiones Viales, se puso en conocimiento a la Concesionaria los informes elaborados por las distintas áreas de la Gerencia Ejecutiva de Planeamiento y Concesiones de esta Dirección Nacional De Vialidad.Que, se intimó a la Concesionaria para que produzca su descargo con ofrecimiento de prueba dentro del plazo indicado en el Punto 5.4 del Capítulo II del Anexo II del Acta Acuerdo mencionada en los considerandos precedentes.Que, no obstante la falta de presentación de descargo por parte de la Concesionaria, corresponde analizar los hechos y antecedentes expuestos en el procedimiento y determinar el derecho aplicable, de acuerdo a lo establecido en el Artículo 1° Bis - Inciso a) - Punto (iii) de la Ley Nacional de Procedimientos Administrativos N°&nbsp;19.549 - Ley N.° 27.742.Que, corresponde señalar que el hecho constatado en la mencionada Acta de Constatación representa un incumplimiento a las condiciones de mantenimiento y conservación de rutina previstas en el Artículo 1 “Trabajos de Conservación de Rutina”, del Capítulo I, Anexo II del Acta Acuerdo mencionada, que en su parte pertinente dispone: “La CONCESIONARIA deberá ejecutar todos los trabajos de conservación de rutina en el Corredor (…) y toda otra tarea para que el Corredor brinde al usuario adecuadas condiciones de estética, seguridad y confort.”Que, específicamente, el incumplimiento verificado mediante el Acta de Constatación citada representa un incumplimiento a la obligación contractual dispuesta en el Artículo 3 “Condiciones exigibles para la calzada de rodamiento”, Capítulo I “Especificaciones Técnicas Generales para el mantenimiento, reparación y conservación rutinaria”, del Anexo II del Acta Acuerdo de Reformulación del Contrato de Concesión de Obra Pública para las mejoras, ampliación, remodelación, conservación y administración del Corredor N.° 18, aprobada por el Decreto N.° 1.019/1996 y modificado luego por el Artículo 7° de la Primera Adecuación de la mencionada Acta Acuerdo aprobada por la Resolución N.° 342/2001 del Registro de la entonces Secretaría de Obras Públicas, que en su parte pertinente dispone: “Desde la aprobación del Acta Acuerdo y durante los próximos CINCO (5) años de la concesión, el Índice de Estado Característico (IE) de la calzada deberá ser igual o superior a SEIS (6) y el Índice de Serviciabilidad Presente Característico (ISP) igual o superior a dos con ocho décimas (2,8) siendo el cumplimiento de ambas exigencias simultáneas. En los años inmediatamente posteriores hasta el inicio de los TRES (3) últimos años de la CONCESIÓN el Índice de Estado característico (IE) de la calzada deberá ser igual o superior a SIETE (7), manteniéndose la igual exigencia respecto del Índice de Serviciabilidad Presente característico. Desde el inicio de los últimos tres años de la CONCESIÓN el Índice de Estado característico no podrá ser inferior a SIETE CON CINCO DÉCIMAS (7,5), que deberá mantenerse hasta el final de la CONCESIÓN. El Índice de Serviciabilidad Presente característico deberá mantener, en dicho período, los mismos parámetros arriba indicados. Entiéndase como Índice de Estado característico e Índice de Serviciabilidad Presente característico, el percentil ochenta (80) para cada tramo de evaluación.”Que, la Supervisión interviniente informa que el hecho constatado representa un incumplimiento a las condiciones de mínimas de mantenimiento y conservación dispuestas por el Artículo 3 “Condiciones exigibles para la calzada de rodamiento”, Capítulo I “Especificaciones Técnicas Generales para el mantenimiento, reparación y conservación rutinaria”, del Anexo II del Acta Acuerdo de Reformulación del Contrato de Concesión de Obra Pública para las mejoras, ampliación, remodelación, conservación y administración del Corredor N.° 18, aprobada por el Decreto N.° 1.019/1996 y modificado luego por el Artículo 7° de la Primera Adecuación de la mencionada Acta Acuerdo aprobada por la Resolución N.° 342/2001 del Registro de la entonces Secretaría de Obras Públicas, explica asimismo que las deficiencias verificadas representan un peligro para la seguridad vial o un menoscabo en las condiciones exigidas contractualmente de estética, seguridad y confort para el usuario, conforme lo dispuesto en el Artículo 1 “Trabajos de Conservación de Rutina”, de la mencionada Acta de Reformulación.Que, de acuerdo a las constancias obrantes en el Expediente citado en el Visto y como consecuencia de la falta de presentación de descargo, la Concesionaria no ha acreditado argumentos que demuestren que el incumplimiento verificado no le fuere imputable, o que existieran causas de justificación obstativas de la aplicación de la penalidad prevista para el incumplimiento constatado.Que, la sanción para este incumplimiento se encuentra prevista en el Artículo 2 “Incumplimiento de las obligaciones establecidas en el Acta Acuerdo”, Inciso 2.4, Apartado 2.4.1, del Capítulo II “Incumplimiento de las Obligaciones de la Concesionaria. Penalidades”, Anexo II del Acta Acuerdo mencionada, que establece: “OCHO MIL (8.000) UNIDADES DE PENALIZACIÓN por TRAMO DE EVALUACIÓN en donde se detecte un Índice de Estado menor al exigido para ese año de concesión y DOS MIL (2.000) UNIDADES DE PENALIZACIÓN por TRAMO DE EVALUACIÓN y por cada semana en que LA CONCESIONARIA tarde en corregir la anomalía, contadas desde la fecha del acta de constatación.”Que, el Área Económico Financiera de la Gerencia Ejecutiva de Planeamiento y Concesiones de esta Dirección Nacional de Vialidad, calculó el monto definitivo de la multa de la penalidad a imponer a la Concesionaria en la cantidad equivalente a 46.000UP (cuarenta y seis mil unidades de penalización) por la tarifa vigente.Que, la Gerencia de Planeamiento y Concesiones, la Gerencia Ejecutiva de Asuntos Jurídicos y la Coordinación de Procesos y Actos Administrativos - Subgerencia de Despacho y Mesa General de Entradas han tomado la intervención de su competencia.Que, la presente se suscribe en virtud de las atribuciones conferidas por el Decreto – Ley N.° 505/1958 ratificado por Ley N.° 14.467, Ley N.°16.920, por el Acta Acuerdo de Reformulación Contractual del Corredor Vial N.º 18 aprobado por Decreto N.º 1019/1996, la Resolución N.º 134/2001 del Registro del entonces Órgano de Control de Concesiones Viales; la Resolución N.° 1963/2012 y la Resolución N.º 1706/2013 ambas del Registro de esta Dirección Nacional de Vialidad, el Decreto N.° 27/2018, el Decreto de Necesidad y Urgencia N.° 195/2024 y el Decreto N.° 639/2025 del Registro del Poder Ejecutivo Nacional.Por ello,EL ADMINISTRADOR GENERAL DE LA DIRECCIÓN NACIONAL DE VIALIDADRESUELVE:ARTÍCULO 1º.- Imputar a Caminos del Río Uruguay S.A. la comisión de una infracción a la obligación contractual dispuesta en el Artículo 3 “Condiciones exigibles para la calzada de rodamiento”, Capítulo I “Especificaciones Técnicas Generales para el mantenimiento, reparación y conservación rutinaria”, del Anexo II del Acta Acuerdo de Reformulación del Contrato de Concesión de Obra Pública para las mejoras, ampliación, remodelación, conservación y administración del Corredor N.° 18, aprobada por el Decreto N.° 1.019/1996 y modificado luego por el Artículo 7° de la Primera Adecuación de la mencionada Acta Acuerdo aprobada por la Resolución N.° 342/2001 del Registro de la entonces Secretaría de Obras Públicas, consistente en la existencia de un Índice de Estado (IE) característico menor al valor contractualmente exigido, constatado durante la Evaluación de Estado 2024 en la Ruta Nacional N.° 135, Tramo Km. 0 a Km. 13, valor alcanzado IE = 6,31.ARTÍCULO 2º.- Aplicar a Caminos del Río Uruguay S.A. por el incumplimiento a que se refiere el artículo anterior, la sanción de multa consistente en la suma equivalente a 46.000UP (cuarenta y seis mil unidades e penalización) por la tarifa vigente, cuyo monto corresponde a la obligación incumplida, de acuerdo a lo dispuesto por el Artículo 2 “Incumplimiento de las obligaciones establecidas en el Acta Acuerdo”, Inciso 2.4, Apartado 2.4.1, del Capítulo II “Incumplimiento de las Obligaciones de la Concesionaria. Penalidades”, Anexo II del Acta Acuerdo mencionada.ARTÍCULO 3°.- Notificar a Caminos del Río Uruguay S.A. por alguno de los medios previstos en el Artículo 41 del Reglamento de Procedimientos Administrativos Decreto N.° 1759/1972, T.O. 894/2017, y su modificatoria Decreto N.° 695/2024.ARTÍCULO 4°.- Publicar por intermedio de la Dirección Nacional de Registro Oficial, la presente Resolución, de conformidad con lo dispuesto por el Artículo 5°, Inciso 5.6 del Capítulo II del Anexo II del Acta Acuerdo de Reformulación del Contrato de Concesión de Obra Pública para las mejoras, ampliación, remodelación, conservación y administración del Corredor N.° 18, aprobada por el Decreto N.° 1.019/1996.ARTÍCULO 5°.- Tomar razón a través de la Subgerencia de Despacho y Mesa General de Entradas, quien notificará y comunicará mediante el sistema de Gestión Documental Electrónica (GDE - CCOO) a las dependencias intervinientes. Cumplido pase a la Gerencia Ejecutiva de Planeamiento y Concesiones, a sus efectos.ARTÍCULO 6°.- Notificar, comunicar y dar intervención a la Dirección Nacional del Registro Oficial para su publicación.Marcelo Jorge Campoye. 07/11/2025 N°&nbsp;84391/25 v. 07/11/2025"</code></pre>
+</div>
+</div>
+<p>Aplicamos los mismos pasos dentro de un bucle</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>links_normativas <span class="ot">&lt;-</span> df_normativas <span class="sc">|&gt;</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(enlaces_normativa)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Armo un dataset vacío</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>base_texto_normativa <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> links_normativas) {</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  link <span class="ot">&lt;-</span> i</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  html_normativa <span class="ot">&lt;-</span> <span class="fu">read_html</span>(link_normativa_ejemplo)</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  texto_normativa <span class="ot">&lt;-</span> html_normativa <span class="sc">%&gt;%</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_nodes</span>(<span class="st">"#cuerpoDetalleAviso"</span>) <span class="sc">%&gt;%</span>  <span class="co"># Selecciona el div con ese ID</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text</span>(<span class="at">trim =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  df_temp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">enlaces_normativa =</span> link, texto_normativa, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>) </span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  base_texto_normativa <span class="ot">&lt;-</span> base_texto_normativa <span class="sc">|&gt;</span> </span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(df_temp)</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Unimos todo y guardamos</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df_normativas_final <span class="ot">&lt;-</span> df_normativas <span class="sc">|&gt;</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(base_texto_normativa) </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardamos</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(df_normativas_final, <span class="st">"df_normativas_final.rds"</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Observamos</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>df_normativas_final <span class="sc">|&gt;</span> </span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">1</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Normativa              nro_expediente
+1 Resolución 1799/2025 RESOL-2025-1799-APN-DNV#MEC
+                          orbitas
+1 DIRECCIÓN NACIONAL DE VIALIDAD 
+                                                       enlaces_normativa
+1 https://www.boletinoficial.gob.ar/detalleAviso/primera/334159/20251107
+       fecha_publicacion texto_normativa
+1 7 de Noviembre de 2025            &lt;NA&gt;</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2025 Ariana Bardauil</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Website construida con <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

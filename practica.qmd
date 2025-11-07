@@ -6,17 +6,12 @@ message: false
 error: false
 ---
 
+# Scrapper del Boletín oficial
 
-
-::::: columns
-::: {.column width="50%"}
-![](images/boletin_oficial.png)
-:::
-
-::: {.column width="50%"}
 El objetivo de esta práctica es obtener un reporte con la legislación que sale a nivel nacional diariamente. Para ello, vamos a armar un [`scraper del BORA`](https://www.boletinoficial.gob.ar/seccion/primera)
-:::
-:::::
+
+![](images/boletin_oficial.png)
+
 
 ### Leemos el HTML
 
