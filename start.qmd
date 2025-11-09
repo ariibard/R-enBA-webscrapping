@@ -13,7 +13,7 @@ Descargá e instalá las últimas versiones de R, RStudio y Quarto:
 
 ## Paquetes de trabajo
 
-Vamos a usar con la función `install.packages()` para descargar `{tidyerse}`,`{gt}`,`{gtExtras}`, `{Janitor}` & `{eph}`. Para esto abrirmos Rstudio y en la parte inferior a la izquierda en la *consola* escribimos o copiamos las siguientes lineas de codigo + enter.
+Vamos a usar con la función `install.packages()` para descargar `{tidyerse}`,`{gt}`,`{rvest}`, `{Janitor}`. Para esto abrirmos Rstudio y en la parte inferior a la izquierda en la *consola* escribimos o copiamos las siguientes lineas de codigo + enter.
 
 > my_packages \<- c("tidyverse", "janitor", "gt", "rvest")
 
