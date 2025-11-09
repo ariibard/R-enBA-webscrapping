@@ -336,7 +336,7 @@ link_normativa_ejemplo <- df_normativas |>
 
 link_normativa_ejemplo
 ```
- 
+
 ## 1° traemos el HTML {.smaller}
 
 Un éxito! Estaban OK los links que sustrajimos de la página web del BORA

@@ -1,0 +1,20 @@
+---
+title: "Antes de empezar"
+---
+
+
+Descargá e instalá las últimas versiones de R, RStudio y Quarto:
+
+-   R 4.2.3 o superior: [https://cran.r-project.org](https://cran.r-project.org/)
+
+-   RStudio 2024.04.0 or superior: <https://posit.co/download/rstudio-desktop>
+
+
+
+## Paquetes de trabajo
+
+Vamos a usar con la función `install.packages()` para descargar `{tidyerse}`,`{gt}`,`{gtExtras}`, `{Janitor}` & `{eph}`. Para esto abrirmos Rstudio y en la parte inferior a la izquierda en la *consola* escribimos o copiamos las siguientes lineas de codigo + enter.
+
+> my_packages \<- c("tidyverse", "janitor", "gt", "rvest")
+
+> install.packages(my_packages, repos = "http://cran.rstudio.com")

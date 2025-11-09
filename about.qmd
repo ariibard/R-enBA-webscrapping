@@ -17,3 +17,11 @@ format:
 :::
 ::::
 
+
+## Expositora
+
+**Ariana Bardauil** es Licenciada en ciencia política por la Universidad Nacional de La Matanza (UNLaM) y candidata a magíster en Generación y Análisis de la Información Estadística en la Universidad Nacional de Tres de Febrero (UNTREF). Docente de minería de texto en la Universidad de Flores (UFLO) y de demografía social en la UNLaM. Se desempeña como Data scientist en el Ministerio de Salud (GCBA), Co-organizadora de [R en Buenos Aires](https://renbaires.github.io/) y coordinadora del [Núcleo de Innovación Social](https://nucleodeinnovacionsocial.com.ar/).
+
+::: {style="margin-top:1em; font-size:0.9em;"}
+<a href="https://github.com/ariibard" target="_blank"> <i class="bi bi-github"></i> </a> <a href="https://www.linkedin.com/in/arianabardauil" target="_blank"> <i class="bi bi-linkedin"></i> </a>
+:::

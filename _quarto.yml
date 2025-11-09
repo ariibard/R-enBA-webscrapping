@@ -21,6 +21,8 @@ website:
     
     contents:
       - href: index.qmd
+        text: Sobre el taller
+      - href: start.qmd
         text: ¿Qué necesitamos?
       - href: about.qmd
         text: Diapositivas
