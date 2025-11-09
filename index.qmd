@@ -3,12 +3,23 @@ title: "R en acción: webscrapping con rvest"
 subtitle: "En esta ocasión, exploraremos las opciones que nos brinda R para el raspado web a través de un ejercicio práctico con el boletín oficial."
 about:
   template: trestles
+  links:
+    - icon: github
+      text: Github
+      href: https://github.com/renbaires
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/company/r-en-buenos-aires/
+    - icon: twitter-x
+      href: https://x.com/renbaires
+    - icon: instagram
+      href: https://www.instagram.com/renbuenosaires?igsh=Y3gwMnB3YmozeXl3
   image: logo.png
 css: equipo.css
 ---
 
 
-## Equipo
+## Equipo de `R en Buenos Aires`
 
 
 ::: team-grid

@@ -30,6 +30,10 @@ R en Buenos Aires · Ariana Bardauil
 :::::
 :::::::
 
+## Escaneá el QR
+
+![](images/qr.png){fig-align="center"}
+
 ## 🔍 ¿Qué es?
 
 Es una técnica que permite extraer información de distintos sitios web
